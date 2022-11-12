@@ -1,8 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using DBH.Runtime;
+using UnityEngine.UI;
 
 namespace DBH.Editor
 {
@@ -14,25 +17,86 @@ namespace DBH.Editor
         [SerializeField]
         private RectTransform m_container;
 
+        [SerializeField]
+        private Button m_addNewMobButton;
+
         private List<MobListEntity> m_entities = new List<MobListEntity>();
 
-        private const string MobResourceFolder = "Assets/DBH/Resources/Mob Data";
+        private const string mobResourceFolder = "Assets/DBH/Resources/Mob Data";
+
+        public event Action onAddNewMobButtonClicked;
+        public event Action<MobListEntity> onOpenMob;
 
         private void Awake()
         {
             CreateDefaultMobIfNoneExist();
+
+            m_addNewMobButton.onClick.AddListener(HandleAddNewMobButtonClicked);
+        }
+
+        private void OnDestroy()
+        {
+            m_addNewMobButton.onClick.RemoveListener(HandleAddNewMobButtonClicked);
         }
 
         // Start is called before the first frame update
         void Start()
         {
-
+            Refresh();
         }
 
         // Update is called once per frame
         void Update()
         {
 
+        }
+
+        public void CreateNewMob(string mobName)
+        {
+            IEnumerable<MobListEntity> duplicateNames = m_entities.Where(e => e.data.name.StartsWith(mobName) ? int.TryParse(e.data.name.Substring(mobName.Length), out int unused) || e.data.name == mobName : false);
+            if (duplicateNames.Count() > 0)
+            {
+                int number = duplicateNames.Count();
+                string tempName = mobName + number;
+
+                while (duplicateNames.Any(e => e.data.name == tempName))
+                {
+                    number++;
+                    tempName = mobName + number;
+                }
+
+                mobName = tempName;
+            }
+
+            AssetDatabase.CreateAsset(MobData.CreateInstance<MobData>(), $"{mobResourceFolder}/{mobName}.asset");
+
+            Refresh();
+        }
+
+        public void Refresh()
+        {
+            Clear();
+
+            MobData[] mobs = Resources.LoadAll<MobData>("Mob Data");
+            foreach (MobData mob in mobs)
+            {
+                MobListEntity entity = Instantiate(m_entityPrefab, m_container);
+
+                entity.data = mob;
+                entity.onEntityDoubleClicked += HandleEntityDoubleClicked;
+
+                m_entities.Add(entity);
+            }
+        }
+
+        private void Clear()
+        {
+            foreach (MobListEntity entity in m_entities)
+            {
+                Destroy(entity.gameObject);
+            }
+
+            m_entities.Clear();
         }
 
         private void CreateSaveFolderStructureIfNotExist()
@@ -54,7 +118,17 @@ namespace DBH.Editor
             CreateSaveFolderStructureIfNotExist();
             
             if(Resources.LoadAll<MobData>("Mob Data").Length == 0)
-                AssetDatabase.CreateAsset(MobData.CreateInstance<MobData>(), $"{MobResourceFolder}/Default Mob.asset");
+                AssetDatabase.CreateAsset(MobData.CreateInstance<MobData>(), $"{mobResourceFolder}/Default Mob.asset");
+        }
+
+        private void HandleEntityDoubleClicked(MobListEntity entity)
+        {
+            onOpenMob.Invoke(entity);
+        }
+
+        private void HandleAddNewMobButtonClicked()
+        {
+            onAddNewMobButtonClicked.Invoke();
         }
     }
 }
