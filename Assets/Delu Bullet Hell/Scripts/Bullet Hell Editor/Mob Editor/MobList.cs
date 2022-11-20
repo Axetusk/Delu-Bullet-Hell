@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEditor;
 using DBH.Runtime;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace DBH.Editor
 {
@@ -26,6 +27,7 @@ namespace DBH.Editor
 
         public event Action onAddNewMobButtonClicked;
         public event Action<MobListEntity> onOpenMob;
+        public event Action<MobListEntity, PointerEventData> onMobRightClicked;
 
         private void Awake()
         {
@@ -78,15 +80,23 @@ namespace DBH.Editor
             Clear();
 
             MobData[] mobs = Resources.LoadAll<MobData>("Mob Data");
+
             foreach (MobData mob in mobs)
             {
                 MobListEntity entity = Instantiate(m_entityPrefab, m_container);
 
                 entity.data = mob;
-                entity.onEntityDoubleClicked += HandleEntityDoubleClicked;
+                entity.onEntityDoubleLeftClicked += HandleEntityDoubleClicked;
+                entity.onEntityRightClicked += HandleEntityRightClicked;
 
                 m_entities.Add(entity);
             }
+        }
+
+        public void Delete(MobListEntity entity)
+        {
+            Destroy(entity.gameObject);
+            AssetDatabase.DeleteAsset($"{mobResourceFolder}/{entity.data.name}.asset");
         }
 
         private void Clear()
@@ -121,7 +131,12 @@ namespace DBH.Editor
                 AssetDatabase.CreateAsset(MobData.CreateInstance<MobData>(), $"{mobResourceFolder}/Default Mob.asset");
         }
 
-        private void HandleEntityDoubleClicked(MobListEntity entity)
+        private void HandleEntityRightClicked(MobListEntity entity, PointerEventData data)
+        {
+            onMobRightClicked(entity, data);
+        }
+
+        private void HandleEntityDoubleClicked(MobListEntity entity, PointerEventData data)
         {
             onOpenMob.Invoke(entity);
         }

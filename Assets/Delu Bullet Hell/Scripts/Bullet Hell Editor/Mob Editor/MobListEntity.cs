@@ -20,7 +20,9 @@ namespace DBH.Editor
 
         private MobData m_data;
 
-        public event Action<MobListEntity> onEntityDoubleClicked;
+        public event Action<MobListEntity, PointerEventData> onEntityRightClicked;
+        public event Action<MobListEntity, PointerEventData> onEntitySingleLeftClicked;
+        public event Action<MobListEntity, PointerEventData> onEntityDoubleLeftClicked;
 
         public MobData data
         {
@@ -35,9 +37,16 @@ namespace DBH.Editor
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (eventData.clickCount == 2)
+            if (eventData.button == PointerEventData.InputButton.Right)
             {
-                onEntityDoubleClicked.Invoke(this);
+                onEntityRightClicked.Invoke(this, eventData);
+            }
+            else if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                if (eventData.clickCount == 2)
+                {
+                    onEntityDoubleLeftClicked.Invoke(this, eventData);
+                }
             }
         }
 
