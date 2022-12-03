@@ -7,6 +7,7 @@ using UnityEditor;
 using DBH.Runtime;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace DBH.Editor
 {
@@ -45,6 +46,8 @@ namespace DBH.Editor
         void Start()
         {
             Refresh();
+
+            onOpenMob.Invoke(m_entities[0]);
         }
 
         // Update is called once per frame
@@ -97,6 +100,14 @@ namespace DBH.Editor
         {
             Destroy(entity.gameObject);
             AssetDatabase.DeleteAsset($"{mobResourceFolder}/{entity.data.name}.asset");
+        }
+
+        public void OverwriteData(MobListEntity entity, MobData data)
+        {
+            AssetDatabase.DeleteAsset($"{mobResourceFolder}/{entity.data.name}.asset");
+            AssetDatabase.CreateAsset(data, $"{mobResourceFolder}/{data.name}.asset");
+            AssetDatabase.Refresh();
+            entity.data = data;
         }
 
         private void Clear()

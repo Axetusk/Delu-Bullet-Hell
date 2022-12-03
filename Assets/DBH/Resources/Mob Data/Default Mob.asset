@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Default Mob
   m_EditorClassIdentifier: 
   sprite: {fileID: 0}
-  HP: 0
-  hitboxRaidus: 0
+  HP: 20
+  hitboxRaidus: 5

@@ -13,14 +13,20 @@ namespace DBH.Editor
         private MobList m_mobList;
 
         [SerializeField]
+        private MobStatsPanel m_mobStats;
+
+        [SerializeField]
         private MobListEntityContextMenu m_mobListEntityContextMenu;
 
         private void Awake()
         {
             m_mobList.onAddNewMobButtonClicked += HandleAddNewMob;
             m_mobList.onMobRightClicked += HandleMoveRightClicked;
+            m_mobList.onOpenMob += HandleMobOpened;
 
             m_mobListEntityContextMenu.onDeleteButtonClicked += HandleDeleteMob;
+
+            m_mobStats.onSaveMob += HandleSaveMob;
         }
 
         // Start is called before the first frame update
@@ -51,6 +57,16 @@ namespace DBH.Editor
             (m_mobListEntityContextMenu.transform as RectTransform).position = data.pressPosition;
             m_mobListEntityContextMenu.gameObject.SetActive(true);
             m_mobListEntityContextMenu.entity = entity;
+        }
+
+        private void HandleMobOpened(MobListEntity entity)
+        {
+            m_mobStats.SetMobData(entity);
+        }
+
+        private void HandleSaveMob(MobListEntity entity, MobData data)
+        {
+            m_mobList.OverwriteData(entity, data);
         }
     }
 }

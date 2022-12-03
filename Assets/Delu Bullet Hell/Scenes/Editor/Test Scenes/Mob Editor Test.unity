@@ -280,7 +280,7 @@ GameObject:
   - component: {fileID: 126031690}
   - component: {fileID: 126031693}
   m_Layer: 5
-  m_Name: InputField (TMP) (2)
+  m_Name: Hitbox Radius Field
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -579,6 +579,7 @@ GameObject:
   - component: {fileID: 175954646}
   - component: {fileID: 175954648}
   - component: {fileID: 175954647}
+  - component: {fileID: 175954649}
   m_Layer: 5
   m_Name: Mob Stats Panel
   m_TagString: Untagged
@@ -641,6 +642,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 175954645}
   m_CullTransparentMesh: 1
+--- !u!114 &175954649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175954645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dba8003894de154ea8178fd8ca65d60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_nameField: {fileID: 1109780960}
+  m_healthField: {fileID: 1266270270}
+  m_hitboxRadiusField: {fileID: 126031690}
+  m_spriteDropdown: {fileID: 2075055388}
+  m_saveButton: {fileID: 43199}
 --- !u!1 &194166312
 GameObject:
   m_ObjectHideFlags: 0
@@ -2817,7 +2835,7 @@ GameObject:
   - component: {fileID: 1109780959}
   - component: {fileID: 1109780963}
   m_Layer: 5
-  m_Name: InputField (TMP)
+  m_Name: Name Field
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3453,7 +3471,7 @@ GameObject:
   - component: {fileID: 1266270270}
   - component: {fileID: 1266270273}
   m_Layer: 5
-  m_Name: InputField (TMP) (1)
+  m_Name: Health Field
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5899,6 +5917,10 @@ PrefabInstance:
       propertyPath: m_mobList
       value: 
       objectReference: {fileID: 2143569346521804520}
+    - target: {fileID: 6636817462659500590, guid: e97a6ec7b9dd7c548ac24232971fdaec, type: 3}
+      propertyPath: m_mobStats
+      value: 
+      objectReference: {fileID: 175954649}
     - target: {fileID: 6636817462659500590, guid: e97a6ec7b9dd7c548ac24232971fdaec, type: 3}
       propertyPath: m_mobListEntityContextMenu
       value: 
