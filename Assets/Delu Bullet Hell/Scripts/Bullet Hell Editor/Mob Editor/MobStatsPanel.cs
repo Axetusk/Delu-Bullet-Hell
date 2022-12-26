@@ -2,6 +2,7 @@ using DBH.Runtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,6 +39,11 @@ namespace DBH.Editor
             m_nameField.text = m_selectedMobDataCopy.name;
             m_healthField.text = m_selectedMobDataCopy.HP.ToString();
             m_hitboxRadiusField.text = m_selectedMobDataCopy.hitboxRaidus.ToString();
+
+            int spriteOption = m_spriteDropdown.options.FindIndex(option => option.image == mob.data.sprite);
+            if (spriteOption == -1)
+                spriteOption = 0;
+            m_spriteDropdown.value = spriteOption;
         }
 
         private void Awake()
@@ -46,6 +52,8 @@ namespace DBH.Editor
             m_nameField.onEndEdit.AddListener(HandleNameChanged);
             m_healthField.onEndEdit.AddListener(HandleHPChanged);
             m_hitboxRadiusField.onEndEdit.AddListener(HandleHitboxRadiusChanged);
+            m_spriteDropdown.onValueChanged.AddListener(HandleSpriteChanged);
+            SpawnSpriteOptions();
         }
 
         // Start is called before the first frame update
@@ -89,10 +97,28 @@ namespace DBH.Editor
             }
         }
 
+        private void HandleSpriteChanged(int option)
+        {
+            m_selectedMobDataCopy.sprite = m_spriteDropdown.options[option].image;
+        }
+
         private void HandleSaveMob()
         {
             onSaveMob(m_selectedMobEntity, m_selectedMobDataCopy);
             m_selectedMobDataCopy = m_selectedMobEntity.data.CreateCopy();
+        }
+
+        private void SpawnSpriteOptions()
+        {
+            List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>();
+            foreach (Sprite sprite in Resources.LoadAll<Sprite>("Character Sprites"))
+            {
+                TMP_Dropdown.OptionData option = new TMP_Dropdown.OptionData();
+                option.text = sprite.name;
+                option.image = sprite;
+                options.Add(option);
+            }
+            m_spriteDropdown.AddOptions(options);
         }
     }
 }
