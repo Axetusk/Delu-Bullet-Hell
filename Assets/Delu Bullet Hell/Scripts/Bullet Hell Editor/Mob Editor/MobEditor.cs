@@ -1,9 +1,11 @@
 using DBH.Runtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace DBH.Editor
 {
@@ -13,14 +15,28 @@ namespace DBH.Editor
         private MobList m_mobList;
 
         [SerializeField]
-        private MobListEntityContextMenu m_mobListEntityContextMenu;
+        private MobStatsPanel m_mobStats;
+
+        [SerializeField]
+        private Button m_saveButton;
+
+        private MobData m_selectedMob;
+        private MobData m_selectedMobChanges;
+
+        public event Action<MobData> onSaveMob;
+        public event Action<MobData> onSelectedMobChanged;
+
+        public MobData selectedMob => m_selectedMobChanges;
 
         private void Awake()
         {
-            m_mobList.onAddNewMobButtonClicked += HandleAddNewMob;
-            m_mobList.onMobRightClicked += HandleMoveRightClicked;
+            //m_mobList.onAddNewMobButtonClicked += HandleAddNewMob;
+            m_mobList.onOpenMob += HandleMobOpened;
+            m_mobList.onMobDeleted += HandleMobDeleted;
+            m_saveButton.onClick.AddListener(HandleSaveMob);
 
-            m_mobListEntityContextMenu.onDeleteButtonClicked += HandleDeleteMob;
+            m_mobList.Initialize(this);
+            m_mobStats.Initialize(this);
         }
 
         // Start is called before the first frame update
@@ -35,22 +51,31 @@ namespace DBH.Editor
 
         }
 
-        private void HandleAddNewMob()
+        private void HandleMobOpened(MobData mob)
         {
-            m_mobList.CreateNewMob("Default Mob");
-            m_mobList.Refresh();
+            m_mobStats.gameObject.SetActive(true);
+            m_selectedMob = mob;
+            m_selectedMobChanges = m_selectedMob.CreateCopy();
+            onSelectedMobChanged(mob);
         }
 
-        private void HandleDeleteMob()
+        private void HandleSaveMob()
         {
-            m_mobList.Delete(m_mobListEntityContextMenu.entity);
+            m_selectedMob.Overwrite(m_selectedMobChanges);
+            string assetPath = AssetDatabase.GetAssetPath(m_selectedMob);
+            AssetDatabase.RenameAsset(assetPath, m_selectedMob.name);
+            AssetDatabase.SaveAssetIfDirty(m_selectedMob);
+            AssetDatabase.Refresh();
+
+            onSaveMob(m_selectedMob);
         }
 
-        private void HandleMoveRightClicked(MobListEntity entity, PointerEventData data)
+        private void HandleMobDeleted(MobData mob)
         {
-            (m_mobListEntityContextMenu.transform as RectTransform).position = data.pressPosition;
-            m_mobListEntityContextMenu.gameObject.SetActive(true);
-            m_mobListEntityContextMenu.entity = entity;
+            if (m_selectedMob == mob)
+            {
+                m_mobStats.gameObject.SetActive(false);
+            }
         }
     }
 }
