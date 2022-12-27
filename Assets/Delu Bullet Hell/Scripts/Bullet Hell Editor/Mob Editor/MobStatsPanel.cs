@@ -23,32 +23,29 @@ namespace DBH.Editor
         [SerializeField]
         private TMP_Dropdown m_spriteDropdown;
 
-        [SerializeField]
-        private Button m_saveButton;
+        private MobEditor m_editor;
 
-        public event Action<MobListEntity, MobData> onSaveMob;
-
-        private MobListEntity m_selectedMobEntity;
-        private MobData m_selectedMobDataCopy;
-
-        public void SetMobData(MobListEntity mob)
+        public void Initialize(MobEditor editor)
         {
-            m_selectedMobEntity = mob;
-            m_selectedMobDataCopy = mob.data.CreateCopy();
+            m_editor = editor;
+            m_editor.onSelectedMobChanged += HandleSelectedMobChanged;
+        }
 
-            m_nameField.text = m_selectedMobDataCopy.name;
-            m_healthField.text = m_selectedMobDataCopy.HP.ToString();
-            m_hitboxRadiusField.text = m_selectedMobDataCopy.hitboxRaidus.ToString();
+        private void HandleSelectedMobChanged(MobData data)
+        {
+            m_nameField.text = data.name;
+            m_healthField.text = data.HP.ToString();
+            m_hitboxRadiusField.text = data.hitboxRaidus.ToString();
 
-            int spriteOption = m_spriteDropdown.options.FindIndex(option => option.image == mob.data.sprite);
+            int spriteOption = m_spriteDropdown.options.FindIndex(option => option.image == data.sprite);
             if (spriteOption == -1)
                 spriteOption = 0;
             m_spriteDropdown.value = spriteOption;
         }
 
+
         private void Awake()
         {
-            m_saveButton.onClick.AddListener(HandleSaveMob);
             m_nameField.onEndEdit.AddListener(HandleNameChanged);
             m_healthField.onEndEdit.AddListener(HandleHPChanged);
             m_hitboxRadiusField.onEndEdit.AddListener(HandleHitboxRadiusChanged);
@@ -70,18 +67,18 @@ namespace DBH.Editor
 
         private void HandleNameChanged(string name)
         {
-            m_selectedMobDataCopy.name = name;
+            m_editor.selectedMob.name = name;
         }
 
         private void HandleHPChanged(string name)
         {
             if (int.TryParse(name, out int result))
             {
-                m_selectedMobDataCopy.HP = result;
+                m_editor.selectedMob.HP = result;
             }
             else
             {
-                m_healthField.text = m_selectedMobDataCopy.HP.ToString();
+                m_healthField.text = m_editor.selectedMob.HP.ToString();
             }
         }
 
@@ -89,23 +86,17 @@ namespace DBH.Editor
         {
             if (int.TryParse(name, out int result))
             {
-                m_selectedMobDataCopy.hitboxRaidus = result;
+                m_editor.selectedMob.hitboxRaidus = result;
             }
             else
             {
-                m_hitboxRadiusField.text = m_selectedMobDataCopy.hitboxRaidus.ToString();
+                m_hitboxRadiusField.text = m_editor.selectedMob.hitboxRaidus.ToString();
             }
         }
 
         private void HandleSpriteChanged(int option)
         {
-            m_selectedMobDataCopy.sprite = m_spriteDropdown.options[option].image;
-        }
-
-        private void HandleSaveMob()
-        {
-            onSaveMob(m_selectedMobEntity, m_selectedMobDataCopy);
-            m_selectedMobDataCopy = m_selectedMobEntity.data.CreateCopy();
+            m_editor.selectedMob.sprite = m_spriteDropdown.options[option].image;
         }
 
         private void SpawnSpriteOptions()

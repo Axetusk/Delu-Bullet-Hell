@@ -22,19 +22,26 @@ namespace DBH.Editor
         [SerializeField]
         private Button m_addNewMobButton;
 
+        [SerializeField]
+        private MobListEntityContextMenu m_mobListEntityContextMenu;
+
         private List<MobListEntity> m_entities = new List<MobListEntity>();
 
         private const string mobResourceFolder = "Assets/DBH/Resources/Mob Data";
 
-        public event Action onAddNewMobButtonClicked;
-        public event Action<MobListEntity> onOpenMob;
-        public event Action<MobListEntity, PointerEventData> onMobRightClicked;
+        public event Action<MobData> onOpenMob;
 
         private void Awake()
         {
             CreateDefaultMobIfNoneExist();
 
             m_addNewMobButton.onClick.AddListener(HandleAddNewMobButtonClicked);
+            m_mobListEntityContextMenu.onDeleteButtonClicked += HandleDeleteMob;
+        }
+
+        public void Initialize(MobEditor editor)
+        {
+            editor.onSaveMob += HandleSaveMob;
         }
 
         private void OnDestroy()
@@ -47,7 +54,7 @@ namespace DBH.Editor
         {
             Refresh();
 
-            onOpenMob.Invoke(m_entities[0]);
+            onOpenMob.Invoke(m_entities[0].data);
         }
 
         // Update is called once per frame
@@ -96,19 +103,26 @@ namespace DBH.Editor
             }
         }
 
-        public void Delete(MobListEntity entity)
+        public void Delete(MobData mob)
         {
-            Destroy(entity.gameObject);
-            AssetDatabase.DeleteAsset($"{mobResourceFolder}/{entity.data.name}.asset");
+            try
+            {
+                Delete(GetEntity(mob));
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to delete mob { mob.name }. Asset may already have been deleted, or moved");
+                Debug.LogException(ex);
+            }
         }
 
-        public void OverwriteData(MobListEntity entity, MobData data)
+        private void Delete(MobListEntity entity)
         {
-            AssetDatabase.DeleteAsset($"{mobResourceFolder}/{entity.data.name}.asset");
-            AssetDatabase.CreateAsset(data, $"{mobResourceFolder}/{data.name}.asset");
-            AssetDatabase.Refresh();
-            entity.data = data;
+            m_entities.Remove(entity);
+            Destroy(entity.gameObject);
+            AssetDatabase.DeleteAsset(GetMobAssetPath(entity));
         }
+
 
         private void Clear()
         {
@@ -144,17 +158,46 @@ namespace DBH.Editor
 
         private void HandleEntityRightClicked(MobListEntity entity, PointerEventData data)
         {
-            onMobRightClicked(entity, data);
+            (m_mobListEntityContextMenu.transform as RectTransform).position = data.pressPosition;
+            m_mobListEntityContextMenu.gameObject.SetActive(true);
+            m_mobListEntityContextMenu.entity = entity;
         }
 
         private void HandleEntityDoubleClicked(MobListEntity entity, PointerEventData data)
         {
-            onOpenMob.Invoke(entity);
+            onOpenMob.Invoke(entity.data);
         }
 
         private void HandleAddNewMobButtonClicked()
         {
-            onAddNewMobButtonClicked.Invoke();
+            CreateNewMob("Default Mob");
+            Refresh();
+        }
+
+        private void HandleDeleteMob()
+        {
+            Delete(m_mobListEntityContextMenu.entity);
+        }
+
+        private void HandleSaveMob(MobData data)
+        {
+            GetEntity(data).data = data;
+        }
+
+        private MobListEntity GetEntity(MobData data)
+        {
+            GUID guid = GetMobGUID(data);
+            return m_entities.Find(e => e.assetGUID == guid);
+        }
+
+        private GUID GetMobGUID(MobData data)
+        {
+            return AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(data));
+        }
+
+        private string GetMobAssetPath(MobListEntity entity)
+        {
+            return AssetDatabase.GUIDToAssetPath(entity.assetGUID);
         }
     }
 }

@@ -21,5 +21,13 @@ namespace DBH.Runtime
 
             return temp;
         }
+
+        public void Overwrite(MobData other)
+        {
+            name = other.name;
+            sprite  = other.sprite;
+            HP = other.HP;
+            hitboxRaidus = other.hitboxRaidus;
+        }
     }
 }

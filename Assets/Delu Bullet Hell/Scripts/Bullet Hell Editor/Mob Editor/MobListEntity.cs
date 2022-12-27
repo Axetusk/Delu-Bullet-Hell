@@ -7,6 +7,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEditor;
 
 namespace DBH.Editor
 {
@@ -19,6 +20,7 @@ namespace DBH.Editor
         private TextMeshProUGUI m_nameText;
 
         private MobData m_data;
+        public GUID assetGUID { get; private set; }
 
         public event Action<MobListEntity, PointerEventData> onEntityRightClicked;
         public event Action<MobListEntity, PointerEventData> onEntitySingleLeftClicked;
@@ -32,6 +34,7 @@ namespace DBH.Editor
                 m_data = value;
                 m_sprite.sprite = value.sprite;
                 m_nameText.text = value.name;
+                assetGUID = AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(value));
             }
         }
 

@@ -658,7 +658,6 @@ MonoBehaviour:
   m_healthField: {fileID: 1266270270}
   m_hitboxRadiusField: {fileID: 126031690}
   m_spriteDropdown: {fileID: 2075055388}
-  m_saveButton: {fileID: 43199}
 --- !u!1 &194166312
 GameObject:
   m_ObjectHideFlags: 0
@@ -5913,6 +5912,10 @@ PrefabInstance:
       propertyPath: m_addNewMobButton
       value: 
       objectReference: {fileID: 1145551166}
+    - target: {fileID: 2143569347245631112, guid: e97a6ec7b9dd7c548ac24232971fdaec, type: 3}
+      propertyPath: m_mobListEntityContextMenu
+      value: 
+      objectReference: {fileID: 1419433230}
     - target: {fileID: 6636817462659500590, guid: e97a6ec7b9dd7c548ac24232971fdaec, type: 3}
       propertyPath: m_mobList
       value: 
@@ -5921,6 +5924,10 @@ PrefabInstance:
       propertyPath: m_mobStats
       value: 
       objectReference: {fileID: 175954649}
+    - target: {fileID: 6636817462659500590, guid: e97a6ec7b9dd7c548ac24232971fdaec, type: 3}
+      propertyPath: m_saveButton
+      value: 
+      objectReference: {fileID: 43199}
     - target: {fileID: 6636817462659500590, guid: e97a6ec7b9dd7c548ac24232971fdaec, type: 3}
       propertyPath: m_mobListEntityContextMenu
       value: 
