@@ -32,6 +32,7 @@ namespace DBH.Editor
         {
             //m_mobList.onAddNewMobButtonClicked += HandleAddNewMob;
             m_mobList.onOpenMob += HandleMobOpened;
+            m_mobList.onMobDeleted += HandleMobDeleted;
             m_saveButton.onClick.AddListener(HandleSaveMob);
 
             m_mobList.Initialize(this);
@@ -52,6 +53,7 @@ namespace DBH.Editor
 
         private void HandleMobOpened(MobData mob)
         {
+            m_mobStats.gameObject.SetActive(true);
             m_selectedMob = mob;
             m_selectedMobChanges = m_selectedMob.CreateCopy();
             onSelectedMobChanged(mob);
@@ -66,6 +68,14 @@ namespace DBH.Editor
             AssetDatabase.Refresh();
 
             onSaveMob(m_selectedMob);
+        }
+
+        private void HandleMobDeleted(MobData mob)
+        {
+            if (m_selectedMob == mob)
+            {
+                m_mobStats.gameObject.SetActive(false);
+            }
         }
     }
 }

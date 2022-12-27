@@ -30,6 +30,7 @@ namespace DBH.Editor
         private const string mobResourceFolder = "Assets/DBH/Resources/Mob Data";
 
         public event Action<MobData> onOpenMob;
+        public event Action<MobData> onMobDeleted;
 
         private void Awake()
         {
@@ -118,6 +119,7 @@ namespace DBH.Editor
 
         private void Delete(MobListEntity entity)
         {
+            onMobDeleted(entity.data);
             m_entities.Remove(entity);
             Destroy(entity.gameObject);
             AssetDatabase.DeleteAsset(GetMobAssetPath(entity));
