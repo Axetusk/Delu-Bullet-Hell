@@ -15,8 +15,6 @@ namespace DBH.Editor
         [HideInInspector]
         public MobListEntity entity;
 
-        public event Action onDeleteButtonClicked;
-
         private void Awake()
         {
             m_deleteButton.onClick.AddListener(HandleDeleteButtonClicked);
@@ -46,7 +44,7 @@ namespace DBH.Editor
 
         private void HandleDeleteButtonClicked()
         {
-            onDeleteButtonClicked();
+            MobDataEditorUtility.Delete(entity.data);
             Close();
         }
 
