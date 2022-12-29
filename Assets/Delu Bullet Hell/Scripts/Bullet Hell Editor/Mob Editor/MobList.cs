@@ -30,19 +30,14 @@ namespace DBH.Editor
         private const string mobResourceFolder = "Assets/DBH/Resources/Mob Data";
 
         public event Action<MobData> onOpenMob;
-        public event Action<MobData> onMobDeleted;
 
         private void Awake()
         {
             CreateDefaultMobIfNoneExist();
 
             m_addNewMobButton.onClick.AddListener(HandleAddNewMobButtonClicked);
-            m_mobListEntityContextMenu.onDeleteButtonClicked += HandleDeleteMob;
-        }
-
-        public void Initialize(MobEditor editor)
-        {
-            editor.onSaveMob += HandleSaveMob;
+            MobDataEditorUtility.onSave += HandleSaveMob;
+            MobDataEditorUtility.onDelete += HandleDelete;
         }
 
         private void OnDestroy()
@@ -104,11 +99,13 @@ namespace DBH.Editor
             }
         }
 
-        public void Delete(MobData mob)
+        private void HandleDelete(MobData mob)
         {
             try
             {
-                Delete(GetEntity(mob));
+                MobListEntity entity = GetEntity(mob);
+                m_entities.Remove(entity);
+                Destroy(entity.gameObject);
             }
             catch (Exception ex)
             {
@@ -116,15 +113,6 @@ namespace DBH.Editor
                 Debug.LogException(ex);
             }
         }
-
-        private void Delete(MobListEntity entity)
-        {
-            onMobDeleted(entity.data);
-            m_entities.Remove(entity);
-            Destroy(entity.gameObject);
-            AssetDatabase.DeleteAsset(GetMobAssetPath(entity));
-        }
-
 
         private void Clear()
         {
@@ -176,11 +164,6 @@ namespace DBH.Editor
             Refresh();
         }
 
-        private void HandleDeleteMob()
-        {
-            Delete(m_mobListEntityContextMenu.entity);
-        }
-
         private void HandleSaveMob(MobData data)
         {
             GetEntity(data).data = data;
@@ -195,11 +178,6 @@ namespace DBH.Editor
         private GUID GetMobGUID(MobData data)
         {
             return AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(data));
-        }
-
-        private string GetMobAssetPath(MobListEntity entity)
-        {
-            return AssetDatabase.GUIDToAssetPath(entity.assetGUID);
         }
     }
 }

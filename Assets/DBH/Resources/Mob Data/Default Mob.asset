@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e95884424e264944bf0f6bede643c3d, type: 3}
   m_Name: Default Mob
   m_EditorClassIdentifier: 
-  sprite: {fileID: 21300026, guid: 8aeb9e233fbb8f14db39770841b78b94, type: 3}
+  sprite: {fileID: 21300004, guid: 8aeb9e233fbb8f14db39770841b78b94, type: 3}
   HP: 20
   hitboxRaidus: 5

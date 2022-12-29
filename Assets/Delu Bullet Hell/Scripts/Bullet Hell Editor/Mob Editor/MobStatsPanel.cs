@@ -67,18 +67,18 @@ namespace DBH.Editor
 
         private void HandleNameChanged(string name)
         {
-            m_editor.selectedMob.name = name;
+            m_editor.SetName(name);
         }
 
         private void HandleHPChanged(string name)
         {
             if (int.TryParse(name, out int result))
             {
-                m_editor.selectedMob.HP = result;
+                m_editor.SetHP(result);
             }
             else
             {
-                m_healthField.text = m_editor.selectedMob.HP.ToString();
+                m_healthField.text = m_editor.GetHP().ToString();
             }
         }
 
@@ -86,17 +86,17 @@ namespace DBH.Editor
         {
             if (int.TryParse(name, out int result))
             {
-                m_editor.selectedMob.hitboxRaidus = result;
+                m_editor.SetHitboxRadius(result);
             }
             else
             {
-                m_hitboxRadiusField.text = m_editor.selectedMob.hitboxRaidus.ToString();
+                m_hitboxRadiusField.text = m_editor.GetHitboxRadius().ToString();
             }
         }
 
         private void HandleSpriteChanged(int option)
         {
-            m_editor.selectedMob.sprite = m_spriteDropdown.options[option].image;
+            m_editor.SetSprite(m_spriteDropdown.options[option].image);
         }
 
         private void SpawnSpriteOptions()
