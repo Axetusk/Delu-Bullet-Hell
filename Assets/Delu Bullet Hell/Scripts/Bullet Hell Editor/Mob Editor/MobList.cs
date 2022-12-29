@@ -36,7 +36,6 @@ namespace DBH.Editor
             CreateDefaultMobIfNoneExist();
 
             m_addNewMobButton.onClick.AddListener(HandleAddNewMobButtonClicked);
-            m_mobListEntityContextMenu.onDeleteButtonClicked += HandleDeleteMob;
             MobDataEditorUtility.onSave += HandleSaveMob;
             MobDataEditorUtility.onDelete += HandleDelete;
         }
