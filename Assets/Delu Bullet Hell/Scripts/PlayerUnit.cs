@@ -16,10 +16,18 @@ namespace DBH.Runtime
         private float m_movementSpeed;
 
         private SpriteRenderer m_spriteRenderer;
+        private CircleCollider2D m_hitbox;
+        private Rigidbody2D m_rigidbody;
 
         public void Awake()
         {
             m_spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+            m_hitbox = gameObject.AddComponent<CircleCollider2D>();
+            m_rigidbody = gameObject.AddComponent<Rigidbody2D>();
+
+            m_rigidbody.gravityScale = 0;
+            m_rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+            m_rigidbody.isKinematic = false;
         }
 
         public void Initialize(PlayableUnitData unitData)
@@ -65,7 +73,7 @@ namespace DBH.Runtime
 
         private void UpdatePlayerPosition(float delta)
         {
-            transform.position += new Vector3(m_movementDirection.x, m_movementDirection.y, 0) * m_movementSpeed * delta;
+            m_rigidbody.MovePosition(transform.position + new Vector3(m_movementDirection.x, m_movementDirection.y, 0) * m_movementSpeed * delta);
         }
     }
 }
