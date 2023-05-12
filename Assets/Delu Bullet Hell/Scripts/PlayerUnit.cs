@@ -21,6 +21,7 @@ namespace DBH.Runtime
 
         public void Awake()
         {
+            gameObject.layer = LayerMask.NameToLayer("Level");
             m_spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
             m_hitbox = gameObject.AddComponent<CircleCollider2D>();
             m_rigidbody = gameObject.AddComponent<Rigidbody2D>();
