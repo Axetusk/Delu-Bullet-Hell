@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace DBH.Runtime
 {
+    [RequireComponent(typeof(SpriteRenderer), typeof(CircleCollider2D), typeof(Rigidbody2D))]
     public class PlayerUnit : MonoBehaviour
     {
         private const float normalMovementSpeed = 5;
@@ -22,13 +23,16 @@ namespace DBH.Runtime
         public void Awake()
         {
             gameObject.layer = LayerMask.NameToLayer("Level");
-            m_spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
-            m_hitbox = gameObject.AddComponent<CircleCollider2D>();
-            m_rigidbody = gameObject.AddComponent<Rigidbody2D>();
+            m_spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+            m_hitbox = gameObject.GetComponent<CircleCollider2D>();
+            m_rigidbody = gameObject.GetComponent<Rigidbody2D>();
 
             m_rigidbody.gravityScale = 0;
+            m_rigidbody.drag = 0;
             m_rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
-            m_rigidbody.isKinematic = false;
+            m_rigidbody.bodyType = RigidbodyType2D.Dynamic;
+            m_rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            m_hitbox.radius = 0.06f;
         }
 
         public void Initialize(PlayableUnitData unitData)
