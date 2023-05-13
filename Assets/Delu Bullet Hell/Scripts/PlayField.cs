@@ -8,14 +8,24 @@ namespace DBH.Runtime
     public class PlayField : MonoBehaviour
     {
         [SerializeField]
-        private Camera m_gameCamera;
+        private Vector2Int m_aspectRatioReal;
+
+        [SerializeField]
+        private float m_fieldSize;
+
+        public Vector2Int aspectRatioReal => m_aspectRatioReal;
+        public float aspectRatio => (float)m_aspectRatioReal.x / (float)m_aspectRatioReal.y;
+        public float fieldSize => m_fieldSize;
+        public Rect rect => new Rect((Vector2)transform.position - (new Vector2(aspectRatio, 1) * m_fieldSize), new Vector2(aspectRatio, 1) * m_fieldSize * 2);
 
         private EdgeCollider2D m_collider;
         private Rigidbody2D m_rigidBody;
 
-        private Vector2 m_bottomLeftPoint;
-        private Vector2 m_topRightPoint;
-        private Vector2 m_hitboxSize { get => m_topRightPoint - m_bottomLeftPoint; }
+        private Vector2 m_bottomLeftPoint { get => new Vector2(rect.xMin, rect.yMin); }
+        private Vector2 m_topRightPoint { get => new Vector2(rect.xMax, rect.yMax); }
+
+        private Vector2 m_bottomRightPoint { get => new Vector2(rect.xMax, rect.yMin); }
+        private Vector2 m_topLeftPoint { get => new Vector2(rect.xMin, rect.yMax); }
 
         public event Action<Collider2D> onObjectExitField;
         public event Action<Collider2D> onObjectEnteredField;
@@ -26,32 +36,16 @@ namespace DBH.Runtime
             m_rigidBody = gameObject.AddComponent<Rigidbody2D>();
             m_rigidBody.bodyType = RigidbodyType2D.Static;
 
-            Vector2 halfSize = new Vector2(m_gameCamera.orthographicSize * m_gameCamera.aspect, m_gameCamera.orthographicSize);
-            m_bottomLeftPoint = m_gameCamera.rect.position - halfSize;
-            m_topRightPoint = m_gameCamera.rect.position + halfSize;
-
-            Vector3 topRight = m_topRightPoint;
-            Vector3 topLeft = m_topRightPoint - new Vector2(m_hitboxSize.x, 0);
-            Vector3 bottomLeft = m_bottomLeftPoint;
-            Vector3 bottomRight = m_bottomLeftPoint + new Vector2(m_hitboxSize.x, 0);
-
-            m_collider.points = new Vector2[] { topLeft, bottomLeft, bottomRight, topRight, topLeft };
+            m_collider.points = new Vector2[] { m_topLeftPoint, m_bottomLeftPoint, m_bottomRightPoint, m_topRightPoint, m_topLeftPoint };
         }
 
         private void OnDrawGizmos()
         {
-            Vector2 halfSize = new Vector2(m_gameCamera.orthographicSize * m_gameCamera.aspect, m_gameCamera.orthographicSize);
-
-            Vector3 topRight = m_gameCamera.transform.position + new Vector3(halfSize.x, halfSize.y, 0);
-            Vector3 topLeft = m_gameCamera.transform.position + new Vector3(-halfSize.x, halfSize.y, 0);
-            Vector3 bottomLeft = m_gameCamera.transform.position + new Vector3(-halfSize.x, -halfSize.y, 0);
-            Vector3 bottomRight = m_gameCamera.transform.position + new Vector3(halfSize.x, -halfSize.y, 0);
-
             Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(topLeft, topRight);
-            Gizmos.DrawLine(topRight, bottomRight);
-            Gizmos.DrawLine(bottomRight, bottomLeft);
-            Gizmos.DrawLine(bottomLeft, topLeft);
+            Gizmos.DrawLine(m_topLeftPoint, m_topRightPoint);
+            Gizmos.DrawLine(m_topRightPoint, m_bottomRightPoint);
+            Gizmos.DrawLine(m_bottomRightPoint, m_bottomLeftPoint);
+            Gizmos.DrawLine(m_bottomLeftPoint, m_topLeftPoint);
         }
 
         public void OnTriggerEnter2D(Collider2D other)
