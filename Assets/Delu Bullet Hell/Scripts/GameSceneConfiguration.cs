@@ -19,5 +19,6 @@ namespace DBH.Runtime
     public class GameSceneConfiguration : ScriptableObject
     {
         public PlayerSpawnPoint defaultSpawnPoint;
+        public float levelTraversalSpeed;
     }
 }

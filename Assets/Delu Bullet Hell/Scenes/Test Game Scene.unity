@@ -365,6 +365,7 @@ MonoBehaviour:
   m_playerSpawnPoint:
     x: 0.5
     y: 0.12
+  m_stripTraversed: 0
 --- !u!1 &496812003
 GameObject:
   m_ObjectHideFlags: 0
